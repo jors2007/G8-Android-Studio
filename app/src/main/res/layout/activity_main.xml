@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/button_actividad"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="Gestionador Actividades"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="282dp" />
+
+    <Button
+        android:id="@+id/button_hidratacion"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="Control de Hidratacion"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="341dp" />
+
+    <Button
+        android:id="@+id/button_sostenibilidad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registro diario de sostenibilidad"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="404dp" />
+
+    <Button
+        android:id="@+id/button_juegoMemoria"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Juego de memoria"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="469dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Desing by G8-POO"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="674dp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="127dp"
+        android:layout_height="21dp"
+        android:layout_marginStart="141dp"
+        android:layout_marginTop="195dp"
+        android:text="Aplicacion Personal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
