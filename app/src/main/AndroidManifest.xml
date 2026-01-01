@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AplicacionG8">
         <activity
+            android:name=".JuegoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SostenibilidadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GestionActividadesActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

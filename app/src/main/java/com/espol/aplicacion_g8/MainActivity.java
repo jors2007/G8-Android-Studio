@@ -1,6 +1,8 @@
 package com.espol.aplicacion_g8;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +21,30 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        Button btnGestion = findViewById(R.id.button_actividad); // Asegúrate de que el ID coincida con tu XML
+        btnGestion.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, GestionActividadesActivity.class);
+            startActivity(intent);
+        });
+
+        Button btnHidratacion = findViewById(R.id.button_hidratacion); // Asegúrate de que el ID coincida con tu XML
+        btnHidratacion.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ControlHidratacionActivity.class);
+            startActivity(intent);
+        });
+
+        Button btnSostenibilidad = findViewById(R.id.button_sostenibilidad); // Asegúrate de que el ID coincida con tu XML
+        btnSostenibilidad.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SostenibilidadActivity.class);
+            startActivity(intent);
+        });
+
+        Button btnJuego = findViewById(R.id.button_juegoMemoria); // Asegúrate de que el ID coincida con tu XML
+        btnJuego.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, JuegoActivity.class);
+            startActivity(intent);
         });
     }
 }
