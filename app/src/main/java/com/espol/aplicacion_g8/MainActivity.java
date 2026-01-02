@@ -23,25 +23,25 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button btnGestion = findViewById(R.id.button_actividad); // Asegúrate de que el ID coincida con tu XML
+        Button btnGestion = findViewById(R.id.button_actividad);
         btnGestion.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, GestionActividadesActivity.class);
             startActivity(intent);
         });
 
-        Button btnHidratacion = findViewById(R.id.button_hidratacion); // Asegúrate de que el ID coincida con tu XML
+        Button btnHidratacion = findViewById(R.id.button_hidratacion);
         btnHidratacion.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ControlHidratacionActivity.class);
             startActivity(intent);
         });
 
-        Button btnSostenibilidad = findViewById(R.id.button_sostenibilidad); // Asegúrate de que el ID coincida con tu XML
+        Button btnSostenibilidad = findViewById(R.id.button_sostenibilidad);
         btnSostenibilidad.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SostenibilidadActivity.class);
             startActivity(intent);
         });
 
-        Button btnJuego = findViewById(R.id.button_juegoMemoria); // Asegúrate de que el ID coincida con tu XML
+        Button btnJuego = findViewById(R.id.button_juegoMemoria);
         btnJuego.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, JuegoActivity.class);
             startActivity(intent);

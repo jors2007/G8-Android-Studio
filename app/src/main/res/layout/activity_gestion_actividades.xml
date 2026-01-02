@@ -7,29 +7,32 @@
     android:layout_height="match_parent"
     tools:context=".GestionActividadesActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="296dp"
-        android:text="boton de prueba"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/recyclerView" />
-
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="seamos felices solamente"
-        tools:layout_editor_absoluteX="123dp"
-        tools:layout_editor_absoluteY="268dp" />
+        android:layout_width="252dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:text="Listado de actividades"
+        android:textSize="23sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_agregarActividad"
+        android:layout_width="163dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="64dp"
+        android:backgroundTint="#2A87E8"
+        android:text="Agregar actividad"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.064"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" /><![CDATA[
+
+    tools:layout_editor_absoluteX="239dp"
+        tools:layout_editor_absoluteY="15dp" />
+]]>
 </androidx.constraintlayout.widget.ConstraintLayout>
