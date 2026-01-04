@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnHidratacion = findViewById(R.id.button_hidratacion);
         btnHidratacion.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ControlHidratacionActivity.class);
+            Intent intent = new Intent(MainActivity.this, HydrationActivity.class);
             startActivity(intent);
         });
 

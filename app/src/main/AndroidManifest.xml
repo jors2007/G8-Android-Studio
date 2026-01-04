@@ -21,7 +21,7 @@
             android:name=".GestionActividadesActivity"
             android:exported="false" />
         <activity
-            android:name=".ControlHidratacionActivity"
+            android:name=".HydrationActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
