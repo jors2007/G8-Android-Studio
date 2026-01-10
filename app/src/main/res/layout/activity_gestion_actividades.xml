@@ -30,9 +30,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.064"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" /><![CDATA[
+        app:layout_constraintTop_toTopOf="parent" />
 
-    tools:layout_editor_absoluteX="239dp"
-        tools:layout_editor_absoluteY="15dp" />
-]]>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_actividad"
+        android:layout_width="409dp"
+        android:layout_height="626dp"
+        android:layout_marginTop="112dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_actividad"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

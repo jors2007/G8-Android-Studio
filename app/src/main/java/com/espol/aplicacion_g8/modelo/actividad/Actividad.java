@@ -39,6 +39,15 @@ public class Actividad implements Serializable {
         this.historialSesiones = new ArrayList<>();
         ;
     }
+    public Actividad(int id, String nombre, String fechaLimite, Prioridad prioridad,int avance, String tipoActividad){
+        this.id = id;
+        this.nombre = nombre;
+        this.fechaLimite= fechaLimite;
+        this.prioridad = prioridad;
+        this.avance = avance;
+        this.tipoActividad = tipoActividad;
+
+    }
 
     // Getters
     public int getId() {

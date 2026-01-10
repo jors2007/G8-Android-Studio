@@ -93,4 +93,5 @@ public class ControladorActividades  {
     public void modificadorAvance(Actividad actividad, int avance) {
         actividad.setAvance(avance);
     }
+
 }
