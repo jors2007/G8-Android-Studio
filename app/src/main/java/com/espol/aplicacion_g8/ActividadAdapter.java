@@ -59,4 +59,10 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.Acti
 
         }
     }
+
+    public void agregarActividad(Actividad nuevaActividad){
+        listaActividades.add(nuevaActividad);
+        notifyItemInserted(listaActividades.size() - 1);
+    }
+
 }

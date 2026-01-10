@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AplicacionG8">
         <activity
+            android:name=".FormularioActividadActivity"
+            android:exported="false" />
+        <activity
             android:name=".JuegoActivity"
             android:exported="false" />
         <activity

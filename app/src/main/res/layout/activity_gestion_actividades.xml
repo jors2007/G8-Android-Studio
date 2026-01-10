@@ -30,7 +30,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.064"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textColor="#040000"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_actividad"
@@ -40,6 +41,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_actividad"/>
+        tools:listitem="@layout/item_actividad" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

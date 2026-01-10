@@ -1,4 +1,6 @@
 package com.espol.aplicacion_g8.modelo.actividad;
+import android.content.Context;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,7 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Actividad implements Serializable {
-    protected static int contadorId = 0;
+    public static int contadorId = 0;
     protected int id = 0;
     protected String nombre;
     protected String descripcion;
@@ -26,7 +28,6 @@ public class Actividad implements Serializable {
     public Actividad(TipoActividad categoria, String tipoActividad, String nombre, String descripcion,
                      Prioridad prioridad, String fechaLimite, double tiempoEstimado) {
         controlId();
-        this.id = id++;
         this.categoria = categoria;
         this.tipoActividad = tipoActividad;
         this.nombre = nombre;
@@ -47,8 +48,11 @@ public class Actividad implements Serializable {
         this.avance = avance;
         this.tipoActividad = tipoActividad;
 
+        // AÑADE ESTA LÍNEA PARA ACTUALIZAR EL CONTADOR:
+        if (id > contadorId) {
+            contadorId = id;
+        }
     }
-
     // Getters
     public int getId() {
         return id;
@@ -102,7 +106,8 @@ public class Actividad implements Serializable {
 
     // METODOS
     public void controlId() {
-        this.id = ++contadorId;
+        contadorId++;
+        this.id = contadorId;
     }
 
     public void setId(int id) {
@@ -113,32 +118,37 @@ public class Actividad implements Serializable {
         contadorId -= 1;
     }
 
+    public static int obtenerContadorId(){
+        return contadorId;
+    }
+
     //  SERIALIZA
-    public void guardarActividades(ArrayList<Actividad> actividad) {
-        String path = "Actividades.ser";
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path))) {
-            out.writeObject(actividad);
-        // mucho ojo con la jerarquia de las excepciones
-        } catch (IOException e) {
+    public static void guardarActividades(Context context, ArrayList<Actividad> actividades) {
+        try {
+            FileOutputStream fos = context.openFileOutput("Actividades.ser", Context.MODE_PRIVATE);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(actividades);
+            oos.close();
+            fos.close();
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (Exception o){
-            o.printStackTrace();
         }
     }
-    // DESERIALIZA
-    public ArrayList<Actividad> cargarActividades() {
-        String path = "Actividades.ser";
-        ArrayList<Actividad> ListaActividades = new ArrayList<>();
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
-            ListaActividades = (ArrayList<Actividad>) in.readObject();
 
-        } catch(FileNotFoundException e){
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        } catch (Exception e){
+    // DESERIALIZA
+    public static ArrayList<Actividad> cargarActividades(Context context) {
+        ArrayList<Actividad> actividades = new ArrayList<>();
+        try {
+            FileInputStream fis = context.openFileInput("Actividades.ser");
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            actividades = (ArrayList<Actividad>) ois.readObject();
+            ois.close();
+            fis.close();
+        } catch (FileNotFoundException e) {
+            return new ArrayList<>();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return ListaActividades;
+        return actividades;
     }
 }

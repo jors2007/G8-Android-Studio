@@ -65,15 +65,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#1BC815"
-                android:text="Ver detalles" />
+                android:backgroundTint="#17B611"
+                android:text="Ver detalles"
+                android:textColor="#040000"/>
 
             <Button
                 android:id="@+id/btnAvance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#F0E50A"
+                android:backgroundTint="#FBF020"
                 android:text="Registrar avance"
                 android:textColor="#040000" />
 
@@ -82,8 +83,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#FA0303"
-                android:text="Eliminar" />
+                android:backgroundTint="#FD2424"
+                android:text="Eliminar"
+                android:textColor="#040000"/>
         </LinearLayout>
 
         <!-- BOTONES FILA 2 -->
@@ -98,15 +100,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#0C2BFA"
-                android:text="Iniciar Pomodoro" />
+                android:backgroundTint="#485CF0"
+                android:text="Iniciar Pomodoro"
+                android:textColor="#040000"/>
 
             <Button
                 android:id="@+id/btnDeepWork"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#28F2DD"
+                android:backgroundTint="#87FFF4"
                 android:text="Iniciar Deep Work"
                 android:textColor="#000000" />
         </LinearLayout>
