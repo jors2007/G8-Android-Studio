@@ -22,10 +22,10 @@ public class GestionActividadesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-        // 1️⃣ Cargar layout (UNA SOLA VEZ)
+        // Cargar layout (UNA SOLA VEZ)
         setContentView(R.layout.activity_gestion_actividades);
 
-        // 2️⃣ Insets (solo padding)
+        // Insets (solo padding)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(
@@ -37,11 +37,11 @@ public class GestionActividadesActivity extends AppCompatActivity {
             return insets;
         });
 
-        // 3️⃣ RecyclerView
+        // RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView_actividad);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // 4️⃣ Datos
+        // Datos
         ArrayList<Actividad> actividades = new ArrayList<>();
         actividades.add(
                 new Actividad(
@@ -54,7 +54,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
                 )
         );
 
-        // 5️⃣ Adapter
+        // Adapter
         ActividadAdapter adapter = new ActividadAdapter(actividades);
         recyclerView.setAdapter(adapter);
     }
