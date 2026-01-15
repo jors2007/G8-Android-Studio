@@ -276,11 +276,13 @@ public class FormularioActividadActivity extends AppCompatActivity {
             String fechaLimite = etFecha.getText().toString().trim();
             double tiempoEstimado = Double.parseDouble(etTiempoEstimado.getText().toString().trim());
 
+            int id = Actividad.obtenerNuevoID(this);
             // Crear actividad según el tipo
             if (tipoActividadSeleccionado == TipoActividad.ACADEMICA) {
                 String asignatura = etAsignatura.getText().toString().trim();
 
                 return new ActividadAcademica(
+                        id,
                         TipoActividad.ACADEMICA,
                         tipoEspecificoSeleccionado,
                         nombre,
@@ -295,6 +297,7 @@ public class FormularioActividadActivity extends AppCompatActivity {
                 String lugar = etLugar.getText().toString().trim();
 
                 return new ActividadPersonal(
+                        id,
                         TipoActividad.PERSONAL,
                         tipoEspecificoSeleccionado,
                         nombre,
@@ -324,4 +327,5 @@ public class FormularioActividadActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Actividad creada exitosamente", Toast.LENGTH_SHORT).show();
     }
+
 }

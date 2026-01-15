@@ -81,11 +81,11 @@
             <Button
                 android:id="@+id/btnEliminar"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="#FD2424"
                 android:text="Eliminar"
-                android:textColor="#040000"/>
+                android:textColor="#040000" />
         </LinearLayout>
 
         <!-- BOTONES FILA 2 -->

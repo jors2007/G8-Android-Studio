@@ -1,5 +1,7 @@
 package com.espol.aplicacion_g8;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,5 +66,7 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.Acti
         listaActividades.add(nuevaActividad);
         notifyItemInserted(listaActividades.size() - 1);
     }
+
+
 
 }

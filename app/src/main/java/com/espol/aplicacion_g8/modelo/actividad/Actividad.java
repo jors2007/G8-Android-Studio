@@ -1,5 +1,6 @@
 package com.espol.aplicacion_g8.modelo.actividad;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,8 +12,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Actividad implements Serializable {
-    public static int contadorId = 0;
-    protected int id = 0;
+
+    protected int id = 0; // La huella digital de cada actividad
     protected String nombre;
     protected String descripcion;
     protected String tipoActividad;
@@ -27,7 +28,6 @@ public class Actividad implements Serializable {
     // Constructor del Padre
     public Actividad(TipoActividad categoria, String tipoActividad, String nombre, String descripcion,
                      Prioridad prioridad, String fechaLimite, double tiempoEstimado) {
-        controlId();
         this.categoria = categoria;
         this.tipoActividad = tipoActividad;
         this.nombre = nombre;
@@ -47,12 +47,16 @@ public class Actividad implements Serializable {
         this.prioridad = prioridad;
         this.avance = avance;
         this.tipoActividad = tipoActividad;
-
-        // AÑADE ESTA LÍNEA PARA ACTUALIZAR EL CONTADOR:
-        if (id > contadorId) {
-            contadorId = id;
-        }
     }
+
+    public Actividad(int id,TipoActividad categoria, String tipoActividad, String nombre, String descripcion,
+                     Prioridad prioridad, String fechaLimite, double tiempoEstimado){
+        // mucho ojo con el this
+        this(categoria,tipoActividad,nombre,descripcion,prioridad,fechaLimite,tiempoEstimado);
+        this.id = id;
+
+    }
+
     // Getters
     public int getId() {
         return id;
@@ -150,5 +154,15 @@ public class Actividad implements Serializable {
             e.printStackTrace();
         }
         return actividades;
+    }
+
+    public static int obtenerNuevoID(Context context){
+        SharedPreferences prefs =
+                context.getSharedPreferences("contador_ids",Context.MODE_PRIVATE);
+        int ultimoId = prefs.getInt("ultimo_id",0);
+        int nuevoId = ultimoId +1;
+
+        prefs.edit().putInt("ultimo_id", nuevoId).apply();
+        return nuevoId;
     }
 }

@@ -3,7 +3,8 @@ package com.espol.aplicacion_g8.modelo.actividad;
 public class ActividadPersonal extends Actividad {
     private String lugar;
 
-    public ActividadPersonal(TipoActividad categoria,
+    public ActividadPersonal(int id,
+                             TipoActividad categoria,
                              String tipo,
                              String nombre,
                              String descripcion,
@@ -11,7 +12,7 @@ public class ActividadPersonal extends Actividad {
                              String fechaLimite,
                              double tiempoEstimado,
                              String lugar){
-        super(TipoActividad.PERSONAL, tipo, nombre, descripcion, prioridad, fechaLimite, tiempoEstimado);
+        super(id,TipoActividad.PERSONAL, tipo, nombre, descripcion, prioridad, fechaLimite, tiempoEstimado);
         this.lugar = lugar;
     }
 
