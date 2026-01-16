@@ -4,7 +4,9 @@ package com.espol.aplicacion_g8.modelo.actividad;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class AppPreferences {
+import java.io.Serializable;
+
+public class AppPreferences implements Serializable {
     private static final String PREFS_NAME = "AppPrefs";
     private static final String KEY_CONTADOR_ID = "contadorId";
 

@@ -1,8 +1,11 @@
 package com.espol.aplicacion_g8;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
@@ -15,23 +18,49 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.espol.aplicacion_g8.modelo.actividad.Actividad;
-import com.espol.aplicacion_g8.modelo.actividad.Prioridad;
 
 import java.util.ArrayList;
 
 public class GestionActividadesActivity extends AppCompatActivity {
+
     private ActividadAdapter adapter;
     private ArrayList<Actividad> actividades;
 
-    private ActivityResultLauncher<Intent> launcherAgregarActividad =
+    // ✅ Formulario: crea actividad
+    private final ActivityResultLauncher<Intent> launcherFormulario =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
                         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                             Actividad nueva = (Actividad) result.getData().getSerializableExtra("actividad");
-                            if (adapter != null && nueva != null) {
-                                adapter.agregarActividad(nueva);
-                                Actividad.guardarActividades(GestionActividadesActivity.this, actividades);
+                            if (nueva != null) {
+                                actividades.add(nueva);
+                                adapter.notifyItemInserted(actividades.size() - 1);
+                                Actividad.guardarActividades(this, actividades);
+                            }
+                        }
+                    }
+            );
+
+    // ✅ Registrar avance
+    private final ActivityResultLauncher<Intent> launcherAvance =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            int idActividad = result.getData().getIntExtra("idActividad", -1);
+                            int nuevoAvance = result.getData().getIntExtra("nuevoAvance", -1);
+
+                            if (idActividad == -1 || nuevoAvance == -1) return;
+
+                            for (int i = 0; i < actividades.size(); i++) {
+                                if (actividades.get(i).getId() == idActividad) {
+                                    actividades.get(i).setAvance(nuevoAvance);
+                                    adapter.notifyItemChanged(i);
+                                    Actividad.guardarActividades(this, actividades);
+                                    Toast.makeText(this, "Avance actualizado", Toast.LENGTH_SHORT).show();
+                                    break;
+                                }
                             }
                         }
                     }
@@ -41,49 +70,60 @@ public class GestionActividadesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_gestion_actividades);
+
+        // ✅ IMPORTANTE: cargar lista antes del adapter
+        actividades = Actividad.cargarActividades(this);
+        if (actividades == null) actividades = new ArrayList<>();
+
+        Button btnAgregar = findViewById(R.id.button_agregarActividad);
+        btnAgregar.setOnClickListener(v -> {
+            Log.d("DEBUG", "BOTÓN AGREGAR PRESIONADO");
+            Intent intent = new Intent(GestionActividadesActivity.this, FormularioActividadActivity.class);
+            launcherFormulario.launch(intent);
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(
-                    systemBars.left,
-                    systemBars.top,
-                    systemBars.right,
-                    systemBars.bottom
-            );
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        // CARGAR ACTIVIDADES GUARDADAS
-        actividades = Actividad.cargarActividades(this);
-
-        // SI ESTÁ VACÍO, agregar ejemplo
-        if (actividades.isEmpty()) {
-            actividades.add(new Actividad(
-                    1,
-                    "Estudiar Física",
-                    "2026-01-15",
-                    Prioridad.BAJA,
-                    50,
-                    "TAREA"
-            ));
-            Actividad.guardarActividades(this, actividades);
-        }
-
-        // RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recyclerView_actividad);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new ActividadAdapter(actividades);
-        recyclerView.setAdapter(adapter);
+        adapter = new ActividadAdapter(actividades, new OnActividadActionListener() {
 
-        Button btnAgregar = findViewById(R.id.button_agregarActividad);
+            @Override
+            public void onEliminar(Actividad actividad) {
+                new AlertDialog.Builder(GestionActividadesActivity.this)
+                        .setTitle("Eliminar actividad")
+                        .setMessage("¿Está seguro que desea eliminar la actividad:\n\n" + actividad.getNombre() + "?")
+                        .setPositiveButton("Sí", (d, w) -> {
+                            actividades.remove(actividad);
+                            adapter.notifyDataSetChanged();
+                            Actividad.guardarActividades(GestionActividadesActivity.this, actividades);
+                        })
+                        .setNegativeButton("Cancelar", null)
+                        .show();
+            }
 
-        btnAgregar.setOnClickListener(v ->{
-            Intent intent = new Intent(this,FormularioActividadActivity.class);
-            launcherAgregarActividad.launch(intent);
+            @Override
+            public void onDetalles(Actividad actividad) {
+                Intent intent = new Intent(GestionActividadesActivity.this, DetalleActividadActivity.class);
+                intent.putExtra("actividad", actividad);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRegistrarAvance(Actividad actividad) {
+                Intent intent = new Intent(GestionActividadesActivity.this, RegistrarAvanceActivity.class);
+                intent.putExtra("actividad", actividad);
+                launcherAvance.launch(intent);
+            }
         });
+
+        recyclerView.setAdapter(adapter);
     }
 
     @Override

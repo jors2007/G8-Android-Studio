@@ -26,12 +26,12 @@
         android:layout_marginTop="64dp"
         android:backgroundTint="#2A87E8"
         android:text="Agregar actividad"
+        android:textColor="#040000"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.064"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textColor="#040000"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_actividad"

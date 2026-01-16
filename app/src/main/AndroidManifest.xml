@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AplicacionG8">
         <activity
+            android:name=".RegistrarAvanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetalleActividadActivity"
+            android:exported="false" />
+        <activity
             android:name=".FormularioActividadActivity"
             android:exported="false" />
         <activity

@@ -108,23 +108,7 @@ public class Actividad implements Serializable {
         this.avance = avance;
     }
 
-    // METODOS
-    public void controlId() {
-        contadorId++;
-        this.id = contadorId;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public static void reducirContadorId() {
-        contadorId -= 1;
-    }
-
-    public static int obtenerContadorId(){
-        return contadorId;
-    }
 
     //  SERIALIZA
     public static void guardarActividades(Context context, ArrayList<Actividad> actividades) {
