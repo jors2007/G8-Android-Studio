@@ -1,5 +1,6 @@
 package com.espol.aplicacion_g8;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.Acti
         return new ActividadViewHolder(v);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull ActividadViewHolder holder, int position) {
         Actividad act = listaActividades.get(position);
@@ -53,6 +55,14 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.Acti
         holder.btnAvance.setOnClickListener(v -> {
             if (listener != null) listener.onRegistrarAvance(act);
         });
+
+        holder.btnPomodoro.setOnClickListener(v -> {
+            if (listener != null) listener.onPomodoro(act);
+        });
+
+        holder.btnDeepWork.setOnClickListener(v -> {
+            if (listener != null) listener.onDeepWork(act);
+        });
     }
     @Override
     public int getItemCount() {
@@ -61,7 +71,7 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.Acti
 
     public static class ActividadViewHolder extends RecyclerView.ViewHolder {
         TextView txtId, txtNombre, txtFecha, txtPrioridad, txtAvance, txtTipo;
-        Button btnEliminar, btnDetalles, btnAvance;
+        Button btnEliminar, btnDetalles, btnAvance,btnPomodoro,btnDeepWork;
 
         public ActividadViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +86,8 @@ public class ActividadAdapter extends RecyclerView.Adapter<ActividadAdapter.Acti
             btnEliminar = itemView.findViewById(R.id.btnEliminar);
             btnDetalles = itemView.findViewById(R.id.btnDetalles);
             btnAvance = itemView.findViewById(R.id.btnAvance);
+            btnPomodoro = itemView.findViewById(R.id.btnPomodoro);
+            btnDeepWork = itemView.findViewById(R.id.btnDeepWork);
         }
     }
 }
