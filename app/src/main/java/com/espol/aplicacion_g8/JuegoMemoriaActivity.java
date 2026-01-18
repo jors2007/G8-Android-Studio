@@ -1,15 +1,15 @@
 package com.espol.aplicacion_g8;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.Configuration;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,8 +21,10 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
     // Componentes de UI
     private GridLayout gridLayout;
     private TextView txtIntentos;
+    private TextView txtDescripcion;
     private Button btnReiniciar;
     private Button btnMenuPrincipal;
+    private LinearLayout mainLayout;
 
     // Sonidos
     private SoundPool soundPool;
@@ -36,28 +38,68 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
     private int intentos = 0;
     private int paresEncontrados = 0;
     private final int TOTAL_PARES = 8;
-    private Button[] botonesCartas = new Button[16];
+
+    // Variables para mantener el estado del juego
+    private boolean juegoIniciado = false;
+    private int[] estadoCartas = new int[16]; // 0 = carta_cerrada, 1-8 = imágenes
+    private boolean[] cartasEmparejadas = new boolean[16];
+    private int[] imagenesGuardadas = new int[16];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_juego_memoria);
 
-        // Inicializar vistas - ¡SOLO LAS QUE EXISTEN!
+        // Inicializar vistas
+        mainLayout = findViewById(R.id.mainLayout);
         gridLayout = findViewById(R.id.gridCartas);
         txtIntentos = findViewById(R.id.txtIntentos);
+        txtDescripcion = findViewById(R.id.txtDescripcion);
         btnReiniciar = findViewById(R.id.btnReiniciar);
         btnMenuPrincipal = findViewById(R.id.btnMenuPrincipal);
+
+        // Aplicar tema inicial
+        aplicarTema();
 
         // Configurar sonidos
         inicializarSonidos();
 
-        // Configurar botones - ¡CORREGIDO!
+        // Configurar botones
         btnReiniciar.setOnClickListener(v -> reiniciarJuego());
-        btnMenuPrincipal.setOnClickListener(v -> volverAlMenu());
+        btnMenuPrincipal.setOnClickListener(v -> finish());
 
         // Iniciar juego
         iniciarJuego();
+    }
+
+    private void aplicarTema() {
+        int nightModeFlags = getResources().getConfiguration().uiMode &
+                Configuration.UI_MODE_NIGHT_MASK;
+
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            // Modo oscuro
+            mainLayout.setBackgroundColor(0xFF191A1C);
+            txtDescripcion.setTextColor(0xFFFFFFFF);
+            txtIntentos.setTextColor(0xFF009688);
+            txtIntentos.setBackgroundColor(0xFF2D2D2D);
+        } else {
+            // Modo claro
+            mainLayout.setBackgroundColor(0xFFF5F5F5);
+            txtDescripcion.setTextColor(0xFF000000);
+            txtIntentos.setTextColor(0xFF009688);
+            txtIntentos.setBackgroundColor(0xFFE8F5E9);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Solo aplicar el tema, NO reiniciar el juego
+        aplicarTema();
+
+        // IMPORTANTE: Mantener el estado actual del juego
+        // No llamamos a iniciarJuego() aquí
     }
 
     private void inicializarSonidos() {
@@ -71,7 +113,6 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
                 .setAudioAttributes(audioAttributes)
                 .build();
 
-        // Cargar sonidos
         sonidoFlip = soundPool.load(this, R.raw.flip, 1);
         sonidoSuccess = soundPool.load(this, R.raw.success, 1);
         sonidoFail = soundPool.load(this, R.raw.fail, 1);
@@ -84,6 +125,8 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
     }
 
     private void iniciarJuego() {
+        juegoIniciado = true;
+
         // Reiniciar variables
         gridLayout.removeAllViews();
         bloqueado = false;
@@ -91,6 +134,13 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
         paresEncontrados = 0;
         primeraCarta = null;
         segundaCarta = null;
+
+        // Reiniciar arrays de estado
+        for (int i = 0; i < 16; i++) {
+            estadoCartas[i] = 0; // Todas cerradas
+            cartasEmparejadas[i] = false;
+            imagenesGuardadas[i] = 0;
+        }
 
         // Actualizar estadísticas
         actualizarEstadisticas();
@@ -106,10 +156,15 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
 
         for (int recurso : recursos) {
             imagenes.add(recurso);
-            imagenes.add(recurso); // Duplicar para el par
+            imagenes.add(recurso);
         }
 
         Collections.shuffle(imagenes);
+
+        // Guardar las imágenes mezcladas
+        for (int i = 0; i < 16; i++) {
+            imagenesGuardadas[i] = imagenes.get(i);
+        }
 
         // Calcular tamaño de carta
         int anchoPantalla = getResources().getDisplayMetrics().widthPixels;
@@ -122,19 +177,30 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = tamañoCarta;
             params.height = tamañoCarta;
-            params.setMargins(8, 8, 8, 8);
+            params.setMargins(6, 6, 6, 6);
 
             carta.setLayoutParams(params);
-            carta.setBackgroundResource(R.drawable.reverso);
+
+            // Usar carta_cerrada.xml
+            carta.setBackgroundResource(R.drawable.carta_cerrada);
+
+            // IMPORTANTE: Limpiar cualquier estilo de botón por defecto
+            carta.setText("");
+            carta.setAllCaps(false);
+
+            // Guardar la imagen frontal como tag
             carta.setTag(imagenes.get(i));
-            carta.setId(View.generateViewId()); // Generar ID único
 
             final int posicion = i;
             carta.setOnClickListener(v -> manejarCarta(carta));
 
             gridLayout.addView(carta);
-            botonesCartas[i] = carta;
         }
+    }
+
+    private void restaurarEstadoJuego() {
+        // Este método podría usarse para restaurar el estado si fuera necesario
+        // Pero no lo estamos usando porque no queremos reiniciar el juego
     }
 
     private void manejarCarta(Button carta) {
@@ -147,7 +213,7 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
             soundPool.play(sonidoFlip, 1, 1, 1, 0, 1);
         }
 
-        // Mostrar imagen
+        // Mostrar imagen frontal
         carta.setBackgroundResource((int) carta.getTag());
 
         if (primeraCarta == null) {
@@ -159,7 +225,6 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
 
             actualizarEstadisticas();
 
-            // Verificar después de un retraso
             new Handler().postDelayed(this::verificarPareja, 700);
         }
     }
@@ -178,9 +243,10 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
 
                 Toast.makeText(this, "¡Par encontrado!", Toast.LENGTH_SHORT).show();
 
-                // Verificar si el juego terminó
                 if (paresEncontrados == TOTAL_PARES) {
-                    mostrarDialogoCompletado();
+                    new Handler().postDelayed(() -> {
+                        mostrarMensajeCompletado();
+                    }, 500);
                 }
             } else {
                 // No es pareja
@@ -188,8 +254,9 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
                     soundPool.play(sonidoFail, 1, 1, 1, 0, 1);
                 }
 
-                primeraCarta.setBackgroundResource(R.drawable.reverso);
-                segundaCarta.setBackgroundResource(R.drawable.reverso);
+                // Volver a mostrar carta_cerrada.xml
+                primeraCarta.setBackgroundResource(R.drawable.carta_cerrada);
+                segundaCarta.setBackgroundResource(R.drawable.carta_cerrada);
             }
 
             primeraCarta = null;
@@ -202,41 +269,23 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
         txtIntentos.setText("Intentos: " + intentos + " | Pares: " + paresEncontrados + "/8");
     }
 
-    private void mostrarDialogoCompletado() {
-        new AlertDialog.Builder(this)
-                .setTitle("¡Felicidades!")
-                .setMessage("¡Completaste el juego en " + intentos + " intentos!\n\n¿Qué deseas hacer?")
-                .setPositiveButton("Jugar de nuevo", (dialog, which) -> {
-                    reiniciarJuego();
-                })
-                .setNegativeButton("Menú principal", (dialog, which) -> {
-                    finish();
-                })
-                .setCancelable(false)
-                .show();
+    private void mostrarMensajeCompletado() {
+        String mensaje = "¡Felicidades! Completaste el juego en " + intentos + " intentos";
+
+        Toast toast = Toast.makeText(this, mensaje, Toast.LENGTH_LONG);
+        toast.setGravity(android.view.Gravity.CENTER, 0, 0);
+        toast.show();
+
+        if (sonidosCargados) {
+            new Handler().postDelayed(() -> {
+                soundPool.play(sonidoSuccess, 1, 1, 1, 0, 1);
+            }, 300);
+        }
     }
 
     private void reiniciarJuego() {
-        new AlertDialog.Builder(this)
-                .setTitle("Reiniciar Juego")
-                .setMessage("¿Estás seguro de que quieres reiniciar el juego?")
-                .setPositiveButton("Sí", (dialog, which) -> {
-                    iniciarJuego();
-                    Toast.makeText(this, "¡Juego reiniciado!", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("No", null)
-                .show();
-    }
-
-    private void volverAlMenu() {
-        new AlertDialog.Builder(this)
-                .setTitle("Volver al Menú")
-                .setMessage("¿Estás seguro de que quieres salir del juego?")
-                .setPositiveButton("Sí", (dialog, which) -> {
-                    finish();
-                })
-                .setNegativeButton("No", null)
-                .show();
+        iniciarJuego();
+        Toast.makeText(this, "¡Juego reiniciado!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
