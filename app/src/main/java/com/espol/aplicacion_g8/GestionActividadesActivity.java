@@ -58,10 +58,39 @@ public class GestionActividadesActivity extends AppCompatActivity {
                                     actividades.get(i).setAvance(nuevoAvance);
                                     adapter.notifyItemChanged(i);
                                     Actividad.guardarActividades(this, actividades);
-                                    Toast.makeText(this, "Avance actualizado", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "Avance actualizado ✅", Toast.LENGTH_SHORT).show();
                                     break;
                                 }
                             }
+                        }
+                    }
+            );
+
+    // ✅ Sesión enfoque (Pomodoro/DeepWork): regresa actividad completa actualizada
+    private final ActivityResultLauncher<Intent> launcherSesion =
+            registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+
+                            Actividad actActualizada =
+                                    (Actividad) result.getData().getSerializableExtra("actividadActualizada");
+
+                            if (actActualizada == null) return;
+
+                            // Reemplazar actividad en el ArrayList
+                            for (int i = 0; i < actividades.size(); i++) {
+                                if (actividades.get(i).getId() == actActualizada.getId()) {
+                                    actividades.set(i, actActualizada);
+                                    adapter.notifyItemChanged(i);
+                                    break;
+                                }
+                            }
+
+                            // Guardar persistente
+                            Actividad.guardarActividades(this, actividades);
+
+                            Toast.makeText(this, "Sesión guardada ✅", Toast.LENGTH_SHORT).show();
                         }
                     }
             );
@@ -72,14 +101,14 @@ public class GestionActividadesActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_gestion_actividades);
 
-        // ✅ IMPORTANTE: cargar lista antes del adapter
+        // ✅ Cargar SOLO UNA VEZ
         actividades = Actividad.cargarActividades(this);
         if (actividades == null) actividades = new ArrayList<>();
 
         Button btnAgregar = findViewById(R.id.button_agregarActividad);
         btnAgregar.setOnClickListener(v -> {
             Log.d("DEBUG", "BOTÓN AGREGAR PRESIONADO");
-            Intent intent = new Intent(GestionActividadesActivity.this, FormularioActividadActivity.class);
+            Intent intent = new Intent(this, FormularioActividadActivity.class);
             launcherFormulario.launch(intent);
         });
 
@@ -98,7 +127,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
             public void onEliminar(Actividad actividad) {
                 new AlertDialog.Builder(GestionActividadesActivity.this)
                         .setTitle("Eliminar actividad")
-                        .setMessage("¿Está seguro que desea eliminar la actividad:\n\n" + actividad.getNombre() + "?")
+                        .setMessage("¿Eliminar:\n\n" + actividad.getNombre() + "?")
                         .setPositiveButton("Sí", (d, w) -> {
                             actividades.remove(actividad);
                             adapter.notifyDataSetChanged();
@@ -120,6 +149,20 @@ public class GestionActividadesActivity extends AppCompatActivity {
                 Intent intent = new Intent(GestionActividadesActivity.this, RegistrarAvanceActivity.class);
                 intent.putExtra("actividad", actividad);
                 launcherAvance.launch(intent);
+            }
+
+            @Override
+            public void onPomodoro(Actividad actividad) {
+                Intent intent = new Intent(GestionActividadesActivity.this, PomodoroActivity.class);
+                intent.putExtra("actividad", actividad);
+                launcherSesion.launch(intent);
+            }
+
+            @Override
+            public void onDeepWork(Actividad actividad) {
+                Intent intent = new Intent(GestionActividadesActivity.this, DeepWorkActivity.class);
+                intent.putExtra("actividad", actividad);
+                launcherSesion.launch(intent);
             }
         });
 

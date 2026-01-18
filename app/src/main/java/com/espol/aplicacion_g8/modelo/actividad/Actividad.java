@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class Actividad implements Serializable {
 
-    protected int id = 0; // La huella digital de cada actividad
+    protected int id = 0;
     protected String nombre;
     protected String descripcion;
     protected String tipoActividad;
@@ -110,7 +110,7 @@ public class Actividad implements Serializable {
 
 
 
-    //  SERIALIZA
+    //  SERIALIZACION
     public static void guardarActividades(Context context, ArrayList<Actividad> actividades) {
         try {
             FileOutputStream fos = context.openFileOutput("Actividades.ser", Context.MODE_PRIVATE);
@@ -123,7 +123,7 @@ public class Actividad implements Serializable {
         }
     }
 
-    // DESERIALIZA
+    // DESERIALIZAR
     public static ArrayList<Actividad> cargarActividades(Context context) {
         ArrayList<Actividad> actividades = new ArrayList<>();
         try {

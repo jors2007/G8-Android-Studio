@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AplicacionG8">
         <activity
+            android:name=".DeepWorkActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PomodoroActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegistrarAvanceActivity"
             android:exported="false" />
         <activity
@@ -25,6 +31,9 @@
             android:exported="false" />
         <activity
             android:name=".SostenibilidadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegistroSostenibilidadActivity"
             android:exported="false" />
         <activity
             android:name=".GestionActividadesActivity"
