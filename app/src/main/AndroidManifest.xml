@@ -27,8 +27,10 @@
             android:name=".FormularioActividadActivity"
             android:exported="false" />
         <activity
-            android:name=".JuegoActivity"
-            android:exported="false" />
+            android:name=".JuegoMemoriaActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|uiMode" />
+
         <activity
             android:name=".SostenibilidadActivity"
             android:exported="false" />
