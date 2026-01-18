@@ -36,7 +36,7 @@ public class DeepWorkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deep_work);
 
-        // ✅ Recibir actividad (NO idActividad)
+        // Recibir actividad (NO idActividad)
         actividad = (Actividad) getIntent().getSerializableExtra("actividad");
         if (actividad == null) {
             Toast.makeText(this, "No se recibió la actividad", Toast.LENGTH_SHORT).show();
@@ -142,7 +142,7 @@ public class DeepWorkActivity extends AppCompatActivity {
 
                 Actividad.guardarActividades(this, lista);
 
-                // ✅ devolver actividad actualizada al listado
+                // devolver actividad actualizada al listado
                 Intent data = new Intent();
                 data.putExtra("actividadActualizada", a);
                 setResult(RESULT_OK, data);
