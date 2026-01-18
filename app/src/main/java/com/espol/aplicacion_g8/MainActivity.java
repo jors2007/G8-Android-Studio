@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        Button btnJuego = findViewById(R.id.button_juegoMemoria);
-        btnJuego.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, JuegoActivity.class);
+        Button btnJuegoMemoria = findViewById(R.id.button_juegoMemoria);
+        btnJuegoMemoria.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, JuegoMemoriaActivity.class);
             startActivity(intent);
         });
     }
