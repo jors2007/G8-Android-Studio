@@ -1,51 +1,31 @@
 package com.espol.aplicacion_g8.modelo.juego;
 
+
 public class Carta {
-
     private int id;
-    private String contenido;
-    private boolean descubierta;
+    private int idImagen;
+    private String nombre;
+    private String descripcion;
     private boolean emparejada;
+    private boolean visible;
 
-    //Constructor
-    public Carta(int id, String contenido){
+    public Carta(int id, int idImagen, String nombre, String descripcion) {
         this.id = id;
-        this.contenido = contenido;
-        this.descubierta = false; //Se debe iniciar cubierta
-        this.emparejada = false; //se debe iniciar no emparejada
+        this.idImagen = idImagen;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.emparejada = false;
+        this.visible = false;
     }
 
-    //Getters && Setters
-    public int getId(){
-        return id;
-    }
+    // Getters y Setters
+    public int getId() { return id; }
+    public int getIdImagen() { return idImagen; }
+    public String getNombre() { return nombre; }
+    public String getDescripcion() { return descripcion; }
+    public boolean isEmparejada() { return emparejada; }
+    public boolean isVisible() { return visible; }
 
-    public void setId(int id){
-        this.id = id;
-    }
-
-    public String getContenido(){
-        return contenido;
-    }
-
-    public void setContenido(String contenido){
-        this.contenido = contenido;
-    }
-
-    public boolean isDescubierta(){
-        return descubierta;
-    }
-
-    public void setDescubierta(boolean descubierta){
-        this.descubierta = descubierta;
-    }
-
-    public boolean isEmparejada(){
-        return emparejada;
-    }
-
-    public void setEmparejada(boolean emparejada){
-        this.emparejada = emparejada;
-    }
-
+    public void setEmparejada(boolean emparejada) { this.emparejada = emparejada; }
+    public void setVisible(boolean visible) { this.visible = visible; }
 }
