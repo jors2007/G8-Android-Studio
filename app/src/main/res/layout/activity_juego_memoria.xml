@@ -6,7 +6,7 @@
     android:background="#191A1C"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".MemoryGameActivity">
+    tools:context=".JuegoMemoriaActivity">
 
     <!-- Título -->
     <TextView
