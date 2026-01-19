@@ -26,7 +26,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
     private ActividadAdapter adapter;
     private ArrayList<Actividad> actividades;
 
-    // ✅ Formulario: crea actividad
+    // Formulario: crea actividad
     private final ActivityResultLauncher<Intent> launcherFormulario =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -42,7 +42,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
                     }
             );
 
-    // ✅ Registrar avance
+    // Registrar avance
     private final ActivityResultLauncher<Intent> launcherAvance =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -58,7 +58,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
                                     actividades.get(i).setAvance(nuevoAvance);
                                     adapter.notifyItemChanged(i);
                                     Actividad.guardarActividades(this, actividades);
-                                    Toast.makeText(this, "Avance actualizado ✅", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(this, "Avance actualizado", Toast.LENGTH_SHORT).show();
                                     break;
                                 }
                             }
@@ -66,7 +66,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
                     }
             );
 
-    // ✅ Sesión enfoque (Pomodoro/DeepWork): regresa actividad completa actualizada
+    // Sesión enfoque (Pomodoro/DeepWork): regresa actividad completa actualizada
     private final ActivityResultLauncher<Intent> launcherSesion =
             registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -90,7 +90,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
                             // Guardar persistente
                             Actividad.guardarActividades(this, actividades);
 
-                            Toast.makeText(this, "Sesión guardada ✅", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Sesión guardada", Toast.LENGTH_SHORT).show();
                         }
                     }
             );
@@ -101,13 +101,12 @@ public class GestionActividadesActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_gestion_actividades);
 
-        // ✅ Cargar SOLO UNA VEZ
+        // Cargar SOLO UNA VEZ
         actividades = Actividad.cargarActividades(this);
         if (actividades == null) actividades = new ArrayList<>();
 
         Button btnAgregar = findViewById(R.id.button_agregarActividad);
         btnAgregar.setOnClickListener(v -> {
-            Log.d("DEBUG", "BOTÓN AGREGAR PRESIONADO");
             Intent intent = new Intent(this, FormularioActividadActivity.class);
             launcherFormulario.launch(intent);
         });
@@ -127,7 +126,7 @@ public class GestionActividadesActivity extends AppCompatActivity {
             public void onEliminar(Actividad actividad) {
                 new AlertDialog.Builder(GestionActividadesActivity.this)
                         .setTitle("Eliminar actividad")
-                        .setMessage("¿Eliminar:\n\n" + actividad.getNombre() + "?")
+                        .setMessage("¿Desea eliminar la actividad:\n" + actividad.getNombre() + "?")
                         .setPositiveButton("Sí", (d, w) -> {
                             actividades.remove(actividad);
                             adapter.notifyDataSetChanged();

@@ -56,7 +56,6 @@ public class RegistrarAvanceActivity extends AppCompatActivity {
                 etNuevoAvance.requestFocus();
                 return;
             }
-
             int nuevoAvance;
             try {
                 nuevoAvance = Integer.parseInt(txt);

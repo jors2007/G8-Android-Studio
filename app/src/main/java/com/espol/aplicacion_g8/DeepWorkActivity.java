@@ -132,7 +132,7 @@ public class DeepWorkActivity extends AppCompatActivity {
         for (Actividad a : lista) {
             if (a.getId() == actividad.getId()) {
 
-                String fecha = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+                String fecha = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault()).format(new Date());
 
                 int durMin = (int) (duracionMs / 60000);
                 if (durMin == 0) durMin = 1;
@@ -147,13 +147,13 @@ public class DeepWorkActivity extends AppCompatActivity {
                 data.putExtra("actividadActualizada", a);
                 setResult(RESULT_OK, data);
 
-                Toast.makeText(this, "Sesión guardada ✅", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Sesión guardada con exito", Toast.LENGTH_SHORT).show();
                 finish();
                 return;
             }
         }
 
-        Toast.makeText(this, "No se encontró la actividad en disco", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "No se encontró la actividad guardada", Toast.LENGTH_SHORT).show();
         finish();
     }
 

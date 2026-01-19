@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
+    android:layout_marginStart="6dp"
+    android:layout_marginEnd="6dp"
     android:layout_marginTop="10dp"
     android:layout_marginBottom="10dp"
     app:cardCornerRadius="14dp"
@@ -75,15 +75,17 @@
                 android:layout_height="46dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="Ver detalles"
+                android:text="Detalles"
                 android:textAllCaps="false"
                 android:textColor="#040000"
                 android:backgroundTint="#17B611"
                 app:cornerRadius="12dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp" />
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
 
-            <!-- ✅ ESTE ES EL QUE ARREGLAMOS -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAvance"
                 android:layout_width="0dp"
@@ -112,8 +114,11 @@
                 android:textColor="#040000"
                 android:backgroundTint="#FD2424"
                 app:cornerRadius="12dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp" />
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
         </LinearLayout>
 
         <!-- BOTONES FILA 2 -->
@@ -129,7 +134,7 @@
                 android:layout_height="46dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:text="Iniciar Pomodoro"
+                android:text="Pomodoro"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:backgroundTint="#485CF0"
@@ -137,15 +142,15 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:gravity="center"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp" />
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDeepWork"
                 android:layout_width="0dp"
                 android:layout_height="46dp"
                 android:layout_weight="1"
-                android:text="Iniciar Deep Work"
+                android:text="Deep Work"
                 android:textAllCaps="false"
                 android:textColor="#000000"
                 android:backgroundTint="#87FFF4"
@@ -153,8 +158,8 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:gravity="center"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp" />
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
         </LinearLayout>
 
     </LinearLayout>
