@@ -15,6 +15,10 @@ import com.espol.aplicacion_g8.controlador.RegistroHidratacion;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import android.content.Intent;
+import android.app.Activity;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 
 public class HydrationActivity extends AppCompatActivity {
     private ControlHidratacion controlHidratacion;
@@ -22,29 +26,60 @@ public class HydrationActivity extends AppCompatActivity {
     private TextView txtPorcentaje, txtMeta, txtTotal;
     private LinearLayout listaRegistrosContainer;
 
+
+    private final ActivityResultLauncher<Intent> lanzador = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+
+                    int valor = result.getData().getIntExtra(FormularioActivity.EXTRA_VALOR, 0);
+                    String modo = result.getData().getStringExtra(FormularioActivity.EXTRA_MODO);
+
+
+                    if (FormularioActivity.MODO_META.equals(modo)) {
+                        controlHidratacion.establecerMetaDiaria(valor);
+                    } else {
+                        controlHidratacion.registrarHidratacion(valor);
+                    }
+
+
+                    actualizarPantalla();
+                }
+            }
+    );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_hidratacion);
 
-        // 1. Inicializar Modelo
+
         controlHidratacion = new ControlHidratacion();
         cargarDatosIniciales();
 
-        // 2. Vincular vistas
+
         progressBar = findViewById(R.id.progressBarAgua);
         txtPorcentaje = findViewById(R.id.txtPorcentaje);
         txtMeta = findViewById(R.id.txtMetaDiaria);
         txtTotal = findViewById(R.id.txtTotalConsumido);
         listaRegistrosContainer = findViewById(R.id.layoutListaRegistros);
+
+        //Registrar
+
         Button btnRegistrar = findViewById(R.id.btnRegistrarAgua);
+        btnRegistrar.setOnClickListener(v -> {
+            Intent intent = new Intent(this, FormularioActivity.class);
+            intent.putExtra(FormularioActivity.EXTRA_MODO, FormularioActivity.MODO_TOMA);
+            lanzador.launch(intent);
+        });
+
+        //Meta
         Button btnMeta = findViewById(R.id.btnEstablecerMeta);
+        btnMeta.setOnClickListener(v -> {
+            Intent intent = new Intent(this, FormularioActivity.class);
+            intent.putExtra(FormularioActivity.EXTRA_MODO, FormularioActivity.MODO_META);
+            lanzador.launch(intent);
+        });
 
-        //  Botón: Registrar Agua
-        btnRegistrar.setOnClickListener(v -> mostrarDialogoRegistrarAgua());
-
-        //  Botón: Cambiar Meta
-        btnMeta.setOnClickListener(v -> mostrarDialogoMeta());
 
         //  Mostrar datos iniciales
         actualizarPantalla();
@@ -62,7 +97,7 @@ public class HydrationActivity extends AppCompatActivity {
         int meta = controlHidratacion.getMetaDiaria();
         double progreso = controlHidratacion.getProgreso();
 
-        // Actualizar Textos y Barra
+
         txtMeta.setText("Meta diaria: " + meta + " ml");
         txtTotal.setText("Total consumido: " + totalHoy + " ml");
         txtPorcentaje.setText((int)progreso + "%");
@@ -110,7 +145,7 @@ public class HydrationActivity extends AppCompatActivity {
         builder.show();
     }
 
-    // Ventana cambiar meta
+
     private void mostrarDialogoMeta() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Actualizar Meta Diaria");

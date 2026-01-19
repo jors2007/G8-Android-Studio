@@ -9,11 +9,10 @@ public class ControlHidratacion{
     private final List<RegistroHidratacion> registros;
     private int metaDiaria;
 
-
     public ControlHidratacion() {
         this.registros = new ArrayList<>();
         this.metaDiaria = 2500;
-        //Como se inicia desde 0 ponemos meta por defecto 2500
+
     }
 
     public boolean registrarHidratacion(int cantidad){

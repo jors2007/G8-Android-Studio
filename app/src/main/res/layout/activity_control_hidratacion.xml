@@ -40,7 +40,7 @@
                     android:id="@+id/txtFecha"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fecha Actual"
+                    android:text="Porcentaje Actual"
                     android:textColor="?android:attr/textColorPrimary"
                     android:layout_marginBottom="10dp"/>
 

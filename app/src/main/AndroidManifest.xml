@@ -43,6 +43,8 @@
         <activity
             android:name=".HydrationActivity"
             android:exported="false" />
+        <activity android:name=".FormularioActivity" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
