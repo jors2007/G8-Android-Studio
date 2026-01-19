@@ -7,6 +7,8 @@ import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.LinearLayout;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class JuegoMemoriaActivity extends AppCompatActivity {
 
@@ -32,18 +35,15 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
     private boolean sonidosCargados = false;
 
     // Lógica del juego
-    private ArrayList<Integer> imagenes;
-    private Button primeraCarta, segundaCarta;
+    private List<Integer> imagenesIds; // Lista de IDs de imágenes
+    private List<Button> cartasButtons; // Lista de botones-cartas
+    private Button primeraCarta = null;
+    private Button segundaCarta = null;
     private boolean bloqueado = false;
     private int intentos = 0;
     private int paresEncontrados = 0;
-    private final int TOTAL_PARES = 8;
-
-    // Variables para mantener el estado del juego
-    private boolean juegoIniciado = false;
-    private int[] estadoCartas = new int[16]; // 0 = carta_cerrada, 1-8 = imágenes
-    private boolean[] cartasEmparejadas = new boolean[16];
-    private int[] imagenesGuardadas = new int[16];
+    private static final int TOTAL_PARES = 8;
+    private static final int TOTAL_CARTAS = TOTAL_PARES * 2; // 16
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,10 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
         txtDescripcion = findViewById(R.id.txtDescripcion);
         btnReiniciar = findViewById(R.id.btnReiniciar);
         btnMenuPrincipal = findViewById(R.id.btnMenuPrincipal);
+
+        // Inicializar listas
+        imagenesIds = new ArrayList<>();
+        cartasButtons = new ArrayList<>();
 
         // Aplicar tema inicial
         aplicarTema();
@@ -94,12 +98,7 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
-        // Solo aplicar el tema, NO reiniciar el juego
         aplicarTema();
-
-        // IMPORTANTE: Mantener el estado actual del juego
-        // No llamamos a iniciarJuego() aquí
     }
 
     private void inicializarSonidos() {
@@ -125,160 +124,229 @@ public class JuegoMemoriaActivity extends AppCompatActivity {
     }
 
     private void iniciarJuego() {
-        juegoIniciado = true;
+
+        // Limpiar listas y vistas
+        cartasButtons.clear();
+        imagenesIds.clear();
+        gridLayout.removeAllViews();
 
         // Reiniciar variables
-        gridLayout.removeAllViews();
         bloqueado = false;
         intentos = 0;
         paresEncontrados = 0;
         primeraCarta = null;
         segundaCarta = null;
 
-        // Reiniciar arrays de estado
-        for (int i = 0; i < 16; i++) {
-            estadoCartas[i] = 0; // Todas cerradas
-            cartasEmparejadas[i] = false;
-            imagenesGuardadas[i] = 0;
-        }
-
         // Actualizar estadísticas
         actualizarEstadisticas();
 
-        // Crear y mezclar imágenes
-        imagenes = new ArrayList<>();
-        int[] recursos = {
-                R.drawable.img_agua, R.drawable.img_arbol,
-                R.drawable.img_bici, R.drawable.img_foco,
-                R.drawable.img_hoja, R.drawable.img_nube,
-                R.drawable.img_reciclaje, R.drawable.img_sol
+        // 1. DEFINIR LOS 8 PARES DE IMÁGENES
+        int[] imagenesBase = {
+                R.drawable.img_agua,
+                R.drawable.img_arbol,
+                R.drawable.img_bici,
+                R.drawable.img_foco,
+                R.drawable.img_hoja,
+                R.drawable.img_nube,
+                R.drawable.img_reciclaje,
+                R.drawable.img_sol
         };
 
-        for (int recurso : recursos) {
-            imagenes.add(recurso);
-            imagenes.add(recurso);
+
+        // 2. CREAR 16 CARTAS (8 PARES)
+        for (int imagenId : imagenesBase) {
+            // Agregar DOS veces cada imagen para formar el par
+            imagenesIds.add(imagenId);
+            imagenesIds.add(imagenId);
         }
 
-        Collections.shuffle(imagenes);
-
-        // Guardar las imágenes mezcladas
-        for (int i = 0; i < 16; i++) {
-            imagenesGuardadas[i] = imagenes.get(i);
+        if (imagenesIds.size() != 16) {
+            Toast.makeText(this, "Error: No hay suficientes imágenes", Toast.LENGTH_LONG).show();
+            return;
         }
 
-        // Calcular tamaño de carta
+        // 3. MEZCLAR LAS CARTAS
+        Collections.shuffle(imagenesIds);
+
+        // 4. CALCULAR TAMAÑO DE CARTA
         int anchoPantalla = getResources().getDisplayMetrics().widthPixels;
         int tamañoCarta = anchoPantalla / 4 - 32;
 
-        // Crear botones/cartas
-        for (int i = 0; i < 16; i++) {
+        // 5. CREAR LOS BOTONES-CARTAS
+        for (int i = 0; i < TOTAL_CARTAS; i++) {
             Button carta = new Button(this);
 
+            // Configurar layout
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.width = tamañoCarta;
             params.height = tamañoCarta;
             params.setMargins(6, 6, 6, 6);
-
             carta.setLayoutParams(params);
 
-            // Usar carta_cerrada.xml
+            // Asignar imagen de reverso (carta cerrada)
             carta.setBackgroundResource(R.drawable.carta_cerrada);
 
-            // IMPORTANTE: Limpiar cualquier estilo de botón por defecto
+            // Limpiar estilos de botón
             carta.setText("");
             carta.setAllCaps(false);
 
-            // Guardar la imagen frontal como tag
-            carta.setTag(imagenes.get(i));
+            // Guardar el ID de la imagen frontal como tag
+            int imagenId = imagenesIds.get(i);
+            carta.setTag(imagenId);
 
+            // DEBUG: Mostrar qué imagen tiene cada carta
+            String nombreImagen = getResources().getResourceName(imagenId);
+
+            // Configurar click listener
             final int posicion = i;
-            carta.setOnClickListener(v -> manejarCarta(carta));
+            carta.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    manejarCarta((Button) v);
+                }
+            });
 
+            // Agregar a la vista y a la lista
             gridLayout.addView(carta);
+            cartasButtons.add(carta);
         }
-    }
 
-    private void restaurarEstadoJuego() {
-        // Este método podría usarse para restaurar el estado si fuera necesario
-        // Pero no lo estamos usando porque no queremos reiniciar el juego
     }
 
     private void manejarCarta(Button carta) {
-        if (bloqueado || carta == primeraCarta || !carta.isEnabled()) {
+        // Validaciones
+        if (bloqueado) {
             return;
         }
 
-        // Reproducir sonido
+        if (carta == primeraCarta) {
+            return;
+        }
+
+        if (!carta.isEnabled()) {
+            return;
+        }
+
+        // Reproducir sonido de volteo
         if (sonidosCargados) {
             soundPool.play(sonidoFlip, 1, 1, 1, 0, 1);
         }
 
         // Mostrar imagen frontal
-        carta.setBackgroundResource((int) carta.getTag());
+        int imagenId = (int) carta.getTag();
+        carta.setBackgroundResource(imagenId);
 
+        // Gestionar selección
         if (primeraCarta == null) {
+            // Primera carta seleccionada
             primeraCarta = carta;
         } else {
+            // Segunda carta seleccionada
             segundaCarta = carta;
             bloqueado = true;
             intentos++;
 
+
             actualizarEstadisticas();
 
-            new Handler().postDelayed(this::verificarPareja, 700);
+            // Esperar y verificar
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    verificarPareja();
+                }
+            }, 700);
         }
     }
 
     private void verificarPareja() {
-        if (primeraCarta != null && segundaCarta != null) {
-            if (primeraCarta.getTag().equals(segundaCarta.getTag())) {
-                // ¡Pareja encontrada!
-                if (sonidosCargados) {
-                    soundPool.play(sonidoSuccess, 1, 1, 1, 0, 1);
-                }
+        if (primeraCarta == null || segundaCarta == null) {
+            return;
+        }
 
-                primeraCarta.setEnabled(false);
-                segundaCarta.setEnabled(false);
-                paresEncontrados++;
+        // Obtener los IDs de las imágenes
+        int idImagen1 = (int) primeraCarta.getTag();
+        int idImagen2 = (int) segundaCarta.getTag();
 
-                Toast.makeText(this, "¡Par encontrado!", Toast.LENGTH_SHORT).show();
+        String nombre1 = getResources().getResourceName(idImagen1);
+        String nombre2 = getResources().getResourceName(idImagen2);
 
-                if (paresEncontrados == TOTAL_PARES) {
-                    new Handler().postDelayed(() -> {
-                        mostrarMensajeCompletado();
-                    }, 500);
-                }
-            } else {
-                // No es pareja
-                if (sonidosCargados) {
-                    soundPool.play(sonidoFail, 1, 1, 1, 0, 1);
-                }
 
-                // Volver a mostrar carta_cerrada.xml
-                primeraCarta.setBackgroundResource(R.drawable.carta_cerrada);
-                segundaCarta.setBackgroundResource(R.drawable.carta_cerrada);
+        boolean sonPareja = (idImagen1 == idImagen2);
+
+        if (sonPareja) {
+            // ¡PAREJA ENCONTRADA!
+            if (sonidosCargados) {
+                soundPool.play(sonidoSuccess, 1, 1, 1, 0, 1);
             }
 
-            primeraCarta = null;
-            segundaCarta = null;
-            bloqueado = false;
+            // Deshabilitar las cartas emparejadas
+            primeraCarta.setEnabled(false);
+            segundaCarta.setEnabled(false);
+
+            // Incrementar contador
+            paresEncontrados++;
+
+            //CORRECCIÓN: ACTUALIZAR ESTADÍSTICAS DESPUÉS DE ENCONTRAR UN PAR
+            actualizarEstadisticas();
+            
+            Toast.makeText(this, "¡Par encontrado!", Toast.LENGTH_SHORT).show();
+
+            // Verificar si el juego terminó
+            if (paresEncontrados >= TOTAL_PARES) {
+              
+                // Contar cartas emparejadas para verificación
+                int cartasEmparejadas = 0;
+                for (Button carta : cartasButtons) {
+                    if (!carta.isEnabled()) {
+                        cartasEmparejadas++;
+                    }
+                }
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mostrarMensajeCompletado();
+                    }
+                }, 500);
+            }
+        } else {
+            // NO ES PAREJA
+            if (sonidosCargados) {
+                soundPool.play(sonidoFail, 1, 1, 1, 0, 1);
+            }
+
+
+            // Volver a mostrar carta cerrada
+            primeraCarta.setBackgroundResource(R.drawable.carta_cerrada);
+            segundaCarta.setBackgroundResource(R.drawable.carta_cerrada);
         }
+
+        // Limpiar selección
+        primeraCarta = null;
+        segundaCarta = null;
+        bloqueado = false;
     }
 
     private void actualizarEstadisticas() {
-        txtIntentos.setText("Intentos: " + intentos + " | Pares: " + paresEncontrados + "/8");
+        String texto = "Intentos: " + intentos + " | Pares: " + paresEncontrados + "/8";
+        txtIntentos.setText(texto);
     }
 
     private void mostrarMensajeCompletado() {
         String mensaje = "¡Felicidades! Completaste el juego en " + intentos + " intentos";
+    
 
         Toast toast = Toast.makeText(this, mensaje, Toast.LENGTH_LONG);
         toast.setGravity(android.view.Gravity.CENTER, 0, 0);
         toast.show();
 
         if (sonidosCargados) {
-            new Handler().postDelayed(() -> {
-                soundPool.play(sonidoSuccess, 1, 1, 1, 0, 1);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    soundPool.play(sonidoSuccess, 1, 1, 1, 0, 1);
+                }
             }, 300);
         }
     }
