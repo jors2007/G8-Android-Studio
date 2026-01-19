@@ -77,6 +77,7 @@ public class HydrationActivity extends AppCompatActivity {
         btnMeta.setOnClickListener(v -> {
             Intent intent = new Intent(this, FormularioActivity.class);
             intent.putExtra(FormularioActivity.EXTRA_MODO, FormularioActivity.MODO_META);
+            intent.putExtra("valor_actual", controlHidratacion.getMetaDiaria());
             lanzador.launch(intent);
         });
 
