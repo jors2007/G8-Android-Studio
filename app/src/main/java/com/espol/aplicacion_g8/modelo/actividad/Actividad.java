@@ -40,14 +40,6 @@ public class Actividad implements Serializable {
         this.historialSesiones = new ArrayList<>();
         ;
     }
-    public Actividad(int id, String nombre, String fechaLimite, Prioridad prioridad,int avance, String tipoActividad){
-        this.id = id;
-        this.nombre = nombre;
-        this.fechaLimite= fechaLimite;
-        this.prioridad = prioridad;
-        this.avance = avance;
-        this.tipoActividad = tipoActividad;
-    }
 
     public Actividad(int id,TipoActividad categoria, String tipoActividad, String nombre, String descripcion,
                      Prioridad prioridad, String fechaLimite, double tiempoEstimado){
@@ -148,5 +140,9 @@ public class Actividad implements Serializable {
 
         prefs.edit().putInt("ultimo_id", nuevoId).apply();
         return nuevoId;
+    }
+
+    public TipoActividad getCategoria() {
+        return categoria;
     }
 }
