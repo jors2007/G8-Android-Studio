@@ -1,70 +1,74 @@
 package com.espol.aplicacion_g8;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.InputType;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import com.espol.aplicacion_g8.controlador.ControlHidratacion;
-import com.espol.aplicacion_g8.controlador.RegistroHidratacion;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import android.content.Intent;
-import android.app.Activity;
+
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.espol.aplicacion_g8.controlador.ControlHidratacion;
+import com.espol.aplicacion_g8.controlador.RegistroHidratacion;
+
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class HydrationActivity extends AppCompatActivity {
+
     private ControlHidratacion controlHidratacion;
     private ProgressBar progressBar;
     private TextView txtPorcentaje, txtMeta, txtTotal;
     private LinearLayout listaRegistrosContainer;
 
-
+    // Lanzador para recibir datos del Formulario
     private final ActivityResultLauncher<Intent> lanzador = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+            (ActivityResult result) -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
 
                     int valor = result.getData().getIntExtra(FormularioActivity.EXTRA_VALOR, 0);
                     String modo = result.getData().getStringExtra(FormularioActivity.EXTRA_MODO);
 
-
                     if (FormularioActivity.MODO_META.equals(modo)) {
                         controlHidratacion.establecerMetaDiaria(valor);
+                        Toast.makeText(this, "Meta actualizada", Toast.LENGTH_SHORT).show();
                     } else {
                         controlHidratacion.registrarHidratacion(valor);
+                        Toast.makeText(this, "Registro guardado", Toast.LENGTH_SHORT).show();
                     }
-
-
                     actualizarPantalla();
                 }
             }
     );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_hidratacion);
 
-
+        // 1. Inicializar el Controlador
         controlHidratacion = new ControlHidratacion();
-        cargarDatosIniciales();
 
-
+        // 2. Conectar Vistas
         progressBar = findViewById(R.id.progressBarAgua);
         txtPorcentaje = findViewById(R.id.txtPorcentaje);
         txtMeta = findViewById(R.id.txtMetaDiaria);
         txtTotal = findViewById(R.id.txtTotalConsumido);
         listaRegistrosContainer = findViewById(R.id.layoutListaRegistros);
 
-        //Registrar
+        // 3. CARGAR DATOS REALES (Persistencia)
+        cargarPreferencias();
 
+        // 4. Configurar Botón REGISTRAR
         Button btnRegistrar = findViewById(R.id.btnRegistrarAgua);
         btnRegistrar.setOnClickListener(v -> {
             Intent intent = new Intent(this, FormularioActivity.class);
@@ -72,25 +76,22 @@ public class HydrationActivity extends AppCompatActivity {
             lanzador.launch(intent);
         });
 
-        //Meta
+        // 5. Configurar Botón META
         Button btnMeta = findViewById(R.id.btnEstablecerMeta);
         btnMeta.setOnClickListener(v -> {
             Intent intent = new Intent(this, FormularioActivity.class);
             intent.putExtra(FormularioActivity.EXTRA_MODO, FormularioActivity.MODO_META);
-            intent.putExtra("valor_actual", controlHidratacion.getMetaDiaria());
+            // Enviamos la meta actual para que aparezca en el formulario
+            intent.putExtra(FormularioActivity.EXTRA_VALOR_ACTUAL, controlHidratacion.getMetaDiaria());
             lanzador.launch(intent);
         });
-
-
-        //  Mostrar datos iniciales
-        actualizarPantalla();
     }
 
-
-    private void cargarDatosIniciales() {
-        controlHidratacion.registrarHidratacion(500, LocalDate.of(2025, 1, 19), LocalTime.of(10, 0));
-        controlHidratacion.registrarHidratacion(300, LocalDate.of(2025, 1, 21), LocalTime.of(15, 30));
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Guardamos todo automáticamente al salir
+        guardarPreferencias();
     }
 
     private void actualizarPantalla() {
@@ -98,73 +99,82 @@ public class HydrationActivity extends AppCompatActivity {
         int meta = controlHidratacion.getMetaDiaria();
         double progreso = controlHidratacion.getProgreso();
 
-
         txtMeta.setText("Meta diaria: " + meta + " ml");
-        txtTotal.setText("Total consumido: " + totalHoy + " ml");
-        txtPorcentaje.setText((int)progreso + "%");
+        txtTotal.setText("Total Hoy: " + totalHoy + " ml");
+        txtPorcentaje.setText((int) progreso + "%");
+
         progressBar.setMax(100);
-        progressBar.setProgress((int)progreso);
+        progressBar.setProgress((int) progreso);
 
-
+        // Actualizar la lista visual
         listaRegistrosContainer.removeAllViews();
 
-
+        // Usamos tu clase RegistroHidratacion para llenar la lista
         for (RegistroHidratacion r : controlHidratacion.getRegistrosHoy()) {
             TextView renglon = new TextView(this);
             String horaFormato = r.getHora().format(DateTimeFormatter.ofPattern("HH:mm"));
             renglon.setText(r.getCantidad() + " ml - " + horaFormato);
             renglon.setTextSize(16);
             renglon.setPadding(0, 10, 0, 10);
+            renglon.setTextColor(getResources().getColor(android.R.color.darker_gray));
             listaRegistrosContainer.addView(renglon);
         }
     }
 
+    // -----------------------------------------------------------
+    // MÉTODOS DE PERSISTENCIA (GUARDAR Y CARGAR)
+    // -----------------------------------------------------------
 
-    private void mostrarDialogoRegistrarAgua() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Registrar Toma de Agua");
+    private void guardarPreferencias() {
+        SharedPreferences prefs = getSharedPreferences("MisDatosAgua", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Ej: 250");
-        builder.setView(input);
+        // 1. Guardar la Meta y la Fecha
+        editor.putInt("meta_guardada", controlHidratacion.getMetaDiaria());
+        String hoy = LocalDate.now().toString();
+        editor.putString("fecha_guardada", hoy);
 
-        builder.setPositiveButton("Guardar", (dialog, which) -> {
-            String texto = input.getText().toString();
-            if (!texto.isEmpty()) {
-                int cantidad = Integer.parseInt(texto);
-                boolean exito = controlHidratacion.registrarHidratacion(cantidad);
-                if (exito) {
-                    actualizarPantalla();
-                    Toast.makeText(this, "Registro guardado", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Error: cantidad inválida", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
-        builder.show();
+        // 2. Guardar el historial como texto simple (Ej: "500,200,300")
+        StringBuilder historialString = new StringBuilder();
+        for (RegistroHidratacion r : controlHidratacion.getRegistrosHoy()) {
+            historialString.append(r.getCantidad()).append(",");
+        }
+        editor.putString("historial_tomas", historialString.toString());
+
+        editor.apply();
     }
 
+    private void cargarPreferencias() {
+        SharedPreferences prefs = getSharedPreferences("MisDatosAgua", Context.MODE_PRIVATE);
 
-    private void mostrarDialogoMeta() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Actualizar Meta Diaria");
+        // 1. Recuperar Meta
+        int metaGuardada = prefs.getInt("meta_guardada", 2500);
+        controlHidratacion.establecerMetaDiaria(metaGuardada);
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setHint("Nueva meta (ml)");
-        builder.setView(input);
+        // 2. Verificar fecha para saber si resetear
+        String fechaGuardada = prefs.getString("fecha_guardada", "");
+        String hoy = LocalDate.now().toString();
 
-        builder.setPositiveButton("Guardar", (dialog, which) -> {
-            String texto = input.getText().toString();
-            if (!texto.isEmpty()) {
-                int nuevaMeta = Integer.parseInt(texto);
-                controlHidratacion.establecerMetaDiaria(nuevaMeta);
-                actualizarPantalla();
+        if (fechaGuardada.equals(hoy)) {
+            // Es el mismo día: Recuperamos las tomas
+            String historial = prefs.getString("historial_tomas", "");
+            if (!historial.isEmpty()) {
+                String[] tomas = historial.split(",");
+                for (String cantidadStr : tomas) {
+                    if (!cantidadStr.isEmpty()) {
+                        try {
+                            int cantidad = Integer.parseInt(cantidadStr);
+                            // Volvemos a registrar en el controlador
+                            controlHidratacion.registrarHidratacion(cantidad);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
-        });
-        builder.setNegativeButton("Cancelar", null);
-        builder.show();
+        }
+        // Si es otro día, no hacemos nada (el controlador inicia vacío)
+
+        actualizarPantalla();
     }
 }
