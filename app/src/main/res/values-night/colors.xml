@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_pantalla">#121212</color>
+    <color name="bg_tarjeta">#1E1E1E</color>
+    <color name="texto_titulo">#81C784</color>
+    <color name="texto_principal">#FFFFFF</color>
+    <color name="texto_secundario">#B0B0B0</color>
+    <color name="acento_verde">#4CAF50</color>
+</resources>

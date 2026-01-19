@@ -1,15 +1,26 @@
 package com.espol.aplicacion_g8.modelo.sostenibilidad;
 
+import android.content.Context;
+import android.util.Log;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RegistroSostenibilidad {
+public class RegistroSostenibilidad implements Serializable {
 
-    private static final String[] ACCIONES_ORDEN = {
+    private static final long serialVersionUID = 1L;
+
+    private static final String NOMBRE_ARCHIVO = "sostenibilidad_g8.dat";
+
+    public static final String[] ACCIONES_ORDEN = {
             "Usé transporte público, bicicleta o caminé.",
             "No realicé impresiones.",
             "No utilicé envases descartables (usé mi termo/taza).",
@@ -19,174 +30,104 @@ public class RegistroSostenibilidad {
     private final Map<LocalDate, List<AccionSostenible>> registroPorDia;
     private LocalDate fechaReferencia;
 
-    public RegistroSostenibilidad(String fecha) {
-        this.fechaReferencia = (fecha == null) ? LocalDate.now() : LocalDate.parse(fecha);
+    public RegistroSostenibilidad() {
+        this.fechaReferencia = LocalDate.now();
         this.registroPorDia = new LinkedHashMap<>();
     }
 
-    // Registra UNA acción en su fecha
+
     public void registrarAccion(AccionSostenible nuevaAccion) {
-        if (nuevaAccion == null) {
-            return;
-        }
+        if (nuevaAccion == null) return;
+
         LocalDate fecha = (nuevaAccion.getFecha() == null) ? LocalDate.now() : nuevaAccion.getFecha();
-        registroPorDia.computeIfAbsent(fecha, f -> new ArrayList<>()).add(nuevaAccion);
+
+        // Si no existe la lista para ese día, se crea
+        if (!registroPorDia.containsKey(fecha)) {
+            registroPorDia.put(fecha, new ArrayList<>());
+        }
+
+        registroPorDia.get(fecha).add(nuevaAccion);
     }
 
-    // Registra varias acciones
     public void registrarAcciones(List<AccionSostenible> acciones) {
-        if (acciones == null) {
-            return;
-        }
+        if (acciones == null) return;
         for (AccionSostenible accion : acciones) {
             registrarAccion(accion);
         }
     }
 
     public List<AccionSostenible> getAccionesDia(LocalDate fecha) {
-        return registroPorDia.getOrDefault(fecha, new ArrayList<>());
+        if (registroPorDia.containsKey(fecha)) {
+            return registroPorDia.get(fecha);
+        }
+        return new ArrayList<>();
     }
 
     public Map<LocalDate, List<AccionSostenible>> getRegistroPorDia() {
         return registroPorDia;
     }
 
-    public void mostrarAcciones() {
-        if (registroPorDia.isEmpty()) {
-            System.out.println("No hay acciones registradas.");
-            return;
-        }
-        System.out.println("=== ACCIONES REGISTRADAS ===");
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        for (Map.Entry<LocalDate, List<AccionSostenible>> entry : registroPorDia.entrySet()) {
-            System.out.println("Fecha: " + entry.getKey().format(formato));
-            for (AccionSostenible a : entry.getValue()) {
-                System.out.println("- " + a.getAccion() + " | Puntos: "
-                        + a.getPuntosSostenibilidad() + " | Logro: " + a.getLogro());
-            }
+    // Permite sobrescribir las acciones de un día específico
+    public void actualizarAccionesDia(LocalDate fecha, List<AccionSostenible> nuevasAcciones) {
+        if (fecha != null) {
+            registroPorDia.put(fecha, nuevasAcciones);
         }
     }
 
-    // RESUMEN SEMANAL
-    public void mostrarEstadisticas() {
-        if (registroPorDia.isEmpty()) {
-            System.out.println("No hay acciones registradas esta semana.");
-            return;
+
+    public void guardar(Context context) {
+        try {
+            File archivo = new File(context.getFilesDir(), NOMBRE_ARCHIVO);
+            FileOutputStream fos = new FileOutputStream(archivo);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(this); // Guarda ESTE objeto completo
+            oos.close();
+            fos.close();
+            Log.d("Sostenibilidad", "Datos guardados correctamente en " + archivo.getAbsolutePath());
+        } catch (Exception e) {
+            Log.e("Sostenibilidad", "Error al guardar: " + e.getMessage());
         }
-
-        LocalDate hoy = LocalDate.now();
-        LocalDate inicio = hoy.minusDays(6);
-        DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        // Inicializar frecuencia de cada acción
-        Map<String, Integer> frecuenciaAcciones = new LinkedHashMap<>();
-        for (String accion : ACCIONES_ORDEN) {
-            frecuenciaAcciones.put(accion, 0);
-        }
-
-        int diasConAlMenosUnaAccion = 0;
-        int diasConCuatroAcciones = 0;
-
-        // Recorremos los días con registro dentro de la semana
-        for (Map.Entry<LocalDate, List<AccionSostenible>> entry : registroPorDia.entrySet()) {
-            LocalDate fecha = entry.getKey();
-            if (fecha.isBefore(inicio) || fecha.isAfter(hoy)) {
-                continue;
-            }
-            List<AccionSostenible> accionesDia = entry.getValue();
-            boolean[] presencia = new boolean[ACCIONES_ORDEN.length];
-
-            for (AccionSostenible a : accionesDia) {
-                // Sumar frecuencia
-                frecuenciaAcciones.merge(a.getAccion(), a.getVecesRealizada(), Integer::sum);
-                int idx = indexAccion(a.getAccion());
-                if (idx >= 0) {
-                    presencia[idx] = true;
-                }
-            }
-
-            int presentes = 0;
-            for (boolean p : presencia) {
-                if (p) presentes++;
-            }
-            if (presentes > 0) {
-                diasConAlMenosUnaAccion++;
-            }
-            if (presentes == ACCIONES_ORDEN.length) {
-                diasConCuatroAcciones++;
-            }
-        }
-
-        System.out.println();
-        System.out.println("--- RESUMEN SEMANAL DE SOSTENIBILIDAD ("
-                + inicio.format(formatoFecha) + " - " + hoy.format(formatoFecha) + ") ---");
-        System.out.println("----------------------------------------------------------------------");
-        System.out.println("FRECUENCIA DE ACCIONES");
-        System.out.println("----------------------------------------------------------------------");
-        System.out.println("ACCIÓN                                       | VECES REALIZADA | LOGRO");
-        System.out.println("--------------------------------------------------------------|-----------------|---------");
-
-        // Mostrar cada acción en orden
-        for (String accionOrdenada : ACCIONES_ORDEN) {
-            int veces = frecuenciaAcciones.getOrDefault(accionOrdenada, 0);
-            int vecesCapped = Math.min(veces, 7); // Máximo 7/7 días
-            String logro = calcularLogro(vecesCapped, accionOrdenada);
-            System.out.printf("%-62s| %-15s | %s%n",
-                    accionOrdenada,
-                    vecesCapped + " / 7 Días",
-                    logro);
-        }
-
-        System.out.println("----------------------------------------------------------------------");
-        System.out.println("ANÁLISIS ECOLÓGICO");
-        System.out.println("----------------------------------------------------------------------");
-
-        int diasTotales = 7;
-        int diasAccionCapped = Math.min(diasConAlMenosUnaAccion, diasTotales);
-        int diasCuatroCapped = Math.min(diasConCuatroAcciones, diasTotales);
-        System.out.println("Días con al menos 1 acción de sostenibilidad: "
-                + diasAccionCapped + " de " + diasTotales + " ("
-                + (diasAccionCapped * 100 / diasTotales) + "%)");
-        System.out.println("Días con las 4 acciones completas: "
-                + diasCuatroCapped + " de " + diasTotales + " ("
-                + (diasCuatroCapped * 100 / diasTotales) + "%)");
-        System.out.println();
-        System.out.println("Tip Ecológico de la Semana: Para aumentar tu puntaje de \"Envases descartables\", "
-                + "ten siempre tu botella reutilizable a la mano antes de salir.");
-        System.out.println("----------------------------------------------------------------------");
     }
 
-    // Decide el texto de LOGRO según la frecuencia semanal
-    private String calcularLogro(int vecesSemana, String accion){
-        if (vecesSemana >= 7){
-            return "Excelente";
-        }
-        if (vecesSemana >= 5){
-            if ("Usé transporte público, bicicleta o caminé.".equals(accion)){
-                return "¡Gran Movilidad!";
-            }
-            return "Muy bien";
-        }
-        if (vecesSemana >= 4){
-            return "Necesita mejorar";
-        }
-        return "Por mejorar";
-    }
+    public static RegistroSostenibilidad cargar(Context context) {
+        RegistroSostenibilidad registro = null;
+        File archivo = new File(context.getFilesDir(), NOMBRE_ARCHIVO);
 
-    private int indexAccion(String accion){
-        for (int i = 0; i < ACCIONES_ORDEN.length; i++){
-            if (ACCIONES_ORDEN[i].equals(accion)){
-                return i;
+        if (archivo.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(archivo);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                registro = (RegistroSostenibilidad) ois.readObject();
+                ois.close();
+                fis.close();
+                Log.d("Sostenibilidad", "Datos cargados exitosamente.");
+            } catch (Exception e) {
+                Log.e("Sostenibilidad", "Error al leer archivo: " + e.getMessage());
             }
         }
-        return -1;
+
+        // Si no hay archivo (la primera vez) o falló la carga, crear uno nuevo con datos iniciales
+        if (registro == null) {
+            registro = new RegistroSostenibilidad();
+            registro.inicializarApp(); // Cargar requerimientos del PDF
+            registro.guardar(context); // Guardar inmediatamente
+        }
+
+        return registro;
     }
 
-    public LocalDate getFechaReferencia() {
-        return fechaReferencia;
-    }
+    // DATOS DE PRUEBA
+    public void inicializarApp() {
+        int year = LocalDate.now().getYear();
 
-    public void setFechaReferencia(LocalDate fechaReferencia) {
-        this.fechaReferencia = fechaReferencia;
+        // Registro del 17 de Enero (Cumple especificación)
+        LocalDate fecha17 = LocalDate.of(year, 1, 17);
+        this.registrarAccion(new AccionSostenible(ACCIONES_ORDEN[0], 1, "¡Gran Movilidad!", fecha17));
+
+        // Registro del 18 de Enero (Cumple especificación)
+        LocalDate fecha18 = LocalDate.of(year, 1, 18);
+        this.registrarAccion(new AccionSostenible(ACCIONES_ORDEN[1], 1, "Excelente", fecha18));
+
+        Log.d("Sostenibilidad", "inicializarApp: Datos del 17 y 18 de Enero creados.");
     }
 }

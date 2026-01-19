@@ -1,8 +1,11 @@
 package com.espol.aplicacion_g8.modelo.sostenibilidad;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class AccionSostenible {
+public class AccionSostenible implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String accion;
     private int puntosSostenibilidad;
     private int vecesRealizada;

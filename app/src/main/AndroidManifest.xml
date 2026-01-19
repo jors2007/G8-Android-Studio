@@ -12,10 +12,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AplicacionG8">
         <activity
-            android:name=".JuegoActivity"
+            android:name=".DeepWorkActivity"
             android:exported="false" />
         <activity
+            android:name=".PomodoroActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegistrarAvanceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetalleActividadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FormularioActividadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".JuegoMemoriaActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|uiMode" />
+
+        <activity
             android:name=".SostenibilidadActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RegistroSostenibilidadActivity"
             android:exported="false" />
         <activity
             android:name=".GestionActividadesActivity"

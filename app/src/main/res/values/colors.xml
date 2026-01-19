@@ -2,4 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="bg_pantalla">#F5F5F5</color>
+    <color name="bg_tarjeta">#FFFFFF</color>
+    <color name="texto_titulo">#2E7D32</color>
+    <color name="texto_principal">#000000</color>
+    <color name="texto_secundario">#666666</color>
+    <color name="acento_verde">#2E7D32</color>
 </resources>

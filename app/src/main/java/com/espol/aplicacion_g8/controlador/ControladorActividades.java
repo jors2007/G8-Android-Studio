@@ -34,20 +34,6 @@ public class ControladorActividades  {
         }
         return null;
     }
-
-    // CREACION DE ACTIVIDADES
-    public void creacionDeActividadAcademica(String tipo,String nombre,String asignatura, String descripcion,
-                                             Prioridad prioridad, String fechaLimite, double tiempoEstimado){
-        ActividadAcademica actividad = new ActividadAcademica(TipoActividad.ACADEMICA,tipo,nombre,asignatura,descripcion,prioridad,fechaLimite,tiempoEstimado);
-        añadirActividad(actividad);
-    }
-
-    public void creacionDeActividadPersonal(String tipo, String nombre, String detalles,
-                                            Prioridad prioridad, String fechaLimite, double tiempoEstimado, String lugar){
-        ActividadPersonal actividad = new ActividadPersonal(TipoActividad.PERSONAL,tipo,nombre,detalles,prioridad,fechaLimite,tiempoEstimado,lugar);
-        añadirActividad(actividad);
-    }
-
     // AÑADE NUEVA ACTIVIDAD
     public void añadirActividad(Actividad actividad) {
         listaActividades.add(actividad);
@@ -93,4 +79,5 @@ public class ControladorActividades  {
     public void modificadorAvance(Actividad actividad, int avance) {
         actividad.setAvance(avance);
     }
+
 }

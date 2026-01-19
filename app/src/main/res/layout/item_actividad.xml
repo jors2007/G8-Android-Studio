@@ -1,0 +1,161 @@
+<?xml version="1.1" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="6dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:id="@+id/itemID_actividad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <!-- DATOS -->
+        <TextView
+            android:id="@+id/txtId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ID: 3"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre: Leer capítulo 5"
+            android:layout_marginTop="2dp"/>
+
+        <TextView
+            android:id="@+id/txtFecha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fecha de vencimiento: 2026-01-15"
+            android:layout_marginTop="2dp"/>
+
+        <TextView
+            android:id="@+id/txtPrioridad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prioridad: Baja"
+            android:layout_marginTop="2dp"/>
+
+        <TextView
+            android:id="@+id/txtAvance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Avance: 70%"
+            android:layout_marginTop="2dp"/>
+
+        <TextView
+            android:id="@+id/txtTipo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo: TAREA"
+            android:layout_marginTop="2dp"/>
+
+        <!-- BOTONES FILA 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDetalles"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Ver detalles"
+                android:textAllCaps="false"
+                android:textColor="#040000"
+                android:backgroundTint="#17B611"
+                app:cornerRadius="12dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp" />
+
+            <!-- ✅ ESTE ES EL QUE ARREGLAMOS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAvance"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Añadir avance"
+                android:textAllCaps="false"
+                android:textColor="#040000"
+                android:backgroundTint="#FBF020"
+                app:cornerRadius="12dp"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEliminar"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:text="Eliminar"
+                android:textAllCaps="false"
+                android:textColor="#040000"
+                android:backgroundTint="#FD2424"
+                app:cornerRadius="12dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp" />
+        </LinearLayout>
+
+        <!-- BOTONES FILA 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPomodoro"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Iniciar Pomodoro"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#485CF0"
+                app:cornerRadius="12dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeepWork"
+                android:layout_width="0dp"
+                android:layout_height="46dp"
+                android:layout_weight="1"
+                android:text="Iniciar Deep Work"
+                android:textAllCaps="false"
+                android:textColor="#000000"
+                android:backgroundTint="#87FFF4"
+                app:cornerRadius="12dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

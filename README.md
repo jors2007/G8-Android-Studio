@@ -29,7 +29,7 @@ Sigan estos pasos para trabajar de forma sincronizada desde la **Terminal** de A
 ### 1. ¿Cómo clonar el proyecto? (Solo la primera vez)
 Si aún no tienes el proyecto en tu computadora, abre una carpeta vacía y ejecuta:
 ```bash
-git clone [https://github.com/jors2007/G8-Android-Studio.git](https://github.com/jors2007/G8-Android-Studio.git)
+git clone https://github.com/jors2007/G8-Android-Studio
 2. ¿Cómo actualizar el repositorio antes de trabajar?
 SIEMPRE haz esto antes de tocar una línea de código para evitar conflictos:
 git pull origin main
