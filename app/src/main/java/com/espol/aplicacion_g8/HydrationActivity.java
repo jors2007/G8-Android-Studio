@@ -29,7 +29,7 @@ public class HydrationActivity extends AppCompatActivity {
 
         // 1. Inicializar Modelo
         controlHidratacion = new ControlHidratacion();
-        cargarDatosIniciales(); // Requerimiento del PDF
+        cargarDatosIniciales();
 
         // 2. Vincular vistas
         progressBar = findViewById(R.id.progressBarAgua);
@@ -40,28 +40,24 @@ public class HydrationActivity extends AppCompatActivity {
         Button btnRegistrar = findViewById(R.id.btnRegistrarAgua);
         Button btnMeta = findViewById(R.id.btnEstablecerMeta);
 
-        // 3. Botón: Registrar Agua
+        //  Botón: Registrar Agua
         btnRegistrar.setOnClickListener(v -> mostrarDialogoRegistrarAgua());
 
-        // 4. Botón: Cambiar Meta
+        //  Botón: Cambiar Meta
         btnMeta.setOnClickListener(v -> mostrarDialogoMeta());
 
-        // 5. Mostrar datos iniciales
+        //  Mostrar datos iniciales
         actualizarPantalla();
     }
 
-    // Requerimiento "Carga de datos" del PDF [cite: 8, 10]
+
     private void cargarDatosIniciales() {
-        // Registro antiguo (no debería sumar al "Total de Hoy" si hoy no es 19 de Enero)
         controlHidratacion.registrarHidratacion(500, LocalDate.of(2025, 1, 19), LocalTime.of(10, 0));
         controlHidratacion.registrarHidratacion(300, LocalDate.of(2025, 1, 21), LocalTime.of(15, 30));
 
-        // Agregamos uno de "Hoy" para que veas que funciona la barra
-        controlHidratacion.registrarHidratacion(250);
     }
 
     private void actualizarPantalla() {
-        // Usamos tus métodos del modelo
         int totalHoy = controlHidratacion.getAcumuladoHoy();
         int meta = controlHidratacion.getMetaDiaria();
         double progreso = controlHidratacion.getProgreso();
@@ -73,10 +69,10 @@ public class HydrationActivity extends AppCompatActivity {
         progressBar.setMax(100);
         progressBar.setProgress((int)progreso);
 
-        // Actualizar Lista (Borramos todo y volvemos a crear)
+
         listaRegistrosContainer.removeAllViews();
 
-        // Usamos tu método getRegistrosHoy()
+
         for (RegistroHidratacion r : controlHidratacion.getRegistrosHoy()) {
             TextView renglon = new TextView(this);
             String horaFormato = r.getHora().format(DateTimeFormatter.ofPattern("HH:mm"));
@@ -87,7 +83,7 @@ public class HydrationActivity extends AppCompatActivity {
         }
     }
 
-    // Ventana emergente para pedir cantidad (reemplaza al Scanner)
+
     private void mostrarDialogoRegistrarAgua() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Registrar Toma de Agua");
@@ -114,7 +110,7 @@ public class HydrationActivity extends AppCompatActivity {
         builder.show();
     }
 
-    // Ventana emergente para cambiar meta
+    // Ventana cambiar meta
     private void mostrarDialogoMeta() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Actualizar Meta Diaria");
