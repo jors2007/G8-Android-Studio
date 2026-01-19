@@ -29,7 +29,7 @@ public class HydrationActivity extends AppCompatActivity {
     private TextView txtPorcentaje, txtMeta, txtTotal;
     private LinearLayout listaRegistrosContainer;
 
-    // Lanzador para recibir datos del Formulario
+
     private final ActivityResultLauncher<Intent> lanzador = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             (ActivityResult result) -> {
@@ -55,20 +55,16 @@ public class HydrationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_hidratacion);
 
-        // 1. Inicializar el Controlador
         controlHidratacion = new ControlHidratacion();
 
-        // 2. Conectar Vistas
         progressBar = findViewById(R.id.progressBarAgua);
         txtPorcentaje = findViewById(R.id.txtPorcentaje);
         txtMeta = findViewById(R.id.txtMetaDiaria);
         txtTotal = findViewById(R.id.txtTotalConsumido);
         listaRegistrosContainer = findViewById(R.id.layoutListaRegistros);
 
-        // 3. CARGAR DATOS REALES (Persistencia)
         cargarPreferencias();
 
-        // 4. Configurar Botón REGISTRAR
         Button btnRegistrar = findViewById(R.id.btnRegistrarAgua);
         btnRegistrar.setOnClickListener(v -> {
             Intent intent = new Intent(this, FormularioActivity.class);
@@ -76,12 +72,11 @@ public class HydrationActivity extends AppCompatActivity {
             lanzador.launch(intent);
         });
 
-        // 5. Configurar Botón META
         Button btnMeta = findViewById(R.id.btnEstablecerMeta);
         btnMeta.setOnClickListener(v -> {
             Intent intent = new Intent(this, FormularioActivity.class);
             intent.putExtra(FormularioActivity.EXTRA_MODO, FormularioActivity.MODO_META);
-            // Enviamos la meta actual para que aparezca en el formulario
+
             intent.putExtra(FormularioActivity.EXTRA_VALOR_ACTUAL, controlHidratacion.getMetaDiaria());
             lanzador.launch(intent);
         });
@@ -90,7 +85,7 @@ public class HydrationActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // Guardamos todo automáticamente al salir
+
         guardarPreferencias();
     }
 
@@ -106,10 +101,9 @@ public class HydrationActivity extends AppCompatActivity {
         progressBar.setMax(100);
         progressBar.setProgress((int) progreso);
 
-        // Actualizar la lista visual
         listaRegistrosContainer.removeAllViews();
 
-        // Usamos tu clase RegistroHidratacion para llenar la lista
+
         for (RegistroHidratacion r : controlHidratacion.getRegistrosHoy()) {
             TextView renglon = new TextView(this);
             String horaFormato = r.getHora().format(DateTimeFormatter.ofPattern("HH:mm"));
@@ -121,20 +115,15 @@ public class HydrationActivity extends AppCompatActivity {
         }
     }
 
-    // -----------------------------------------------------------
-    // MÉTODOS DE PERSISTENCIA (GUARDAR Y CARGAR)
-    // -----------------------------------------------------------
 
     private void guardarPreferencias() {
         SharedPreferences prefs = getSharedPreferences("MisDatosAgua", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        // 1. Guardar la Meta y la Fecha
         editor.putInt("meta_guardada", controlHidratacion.getMetaDiaria());
         String hoy = LocalDate.now().toString();
         editor.putString("fecha_guardada", hoy);
 
-        // 2. Guardar el historial como texto simple (Ej: "500,200,300")
         StringBuilder historialString = new StringBuilder();
         for (RegistroHidratacion r : controlHidratacion.getRegistrosHoy()) {
             historialString.append(r.getCantidad()).append(",");
@@ -147,16 +136,14 @@ public class HydrationActivity extends AppCompatActivity {
     private void cargarPreferencias() {
         SharedPreferences prefs = getSharedPreferences("MisDatosAgua", Context.MODE_PRIVATE);
 
-        // 1. Recuperar Meta
         int metaGuardada = prefs.getInt("meta_guardada", 2500);
         controlHidratacion.establecerMetaDiaria(metaGuardada);
 
-        // 2. Verificar fecha para saber si resetear
         String fechaGuardada = prefs.getString("fecha_guardada", "");
         String hoy = LocalDate.now().toString();
 
         if (fechaGuardada.equals(hoy)) {
-            // Es el mismo día: Recuperamos las tomas
+
             String historial = prefs.getString("historial_tomas", "");
             if (!historial.isEmpty()) {
                 String[] tomas = historial.split(",");
@@ -164,7 +151,7 @@ public class HydrationActivity extends AppCompatActivity {
                     if (!cantidadStr.isEmpty()) {
                         try {
                             int cantidad = Integer.parseInt(cantidadStr);
-                            // Volvemos a registrar en el controlador
+
                             controlHidratacion.registrarHidratacion(cantidad);
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
@@ -173,7 +160,6 @@ public class HydrationActivity extends AppCompatActivity {
                 }
             }
         }
-        // Si es otro día, no hacemos nada (el controlador inicia vacío)
 
         actualizarPantalla();
     }
